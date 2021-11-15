@@ -47,7 +47,7 @@ const Styles = styled.div`
       color: black;
       margin: 10px;
       padding: 10px;
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid #e0e0e0;
       border-right: 1px solid white;
       height: 40px;
 

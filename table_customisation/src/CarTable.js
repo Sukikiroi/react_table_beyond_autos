@@ -36,6 +36,12 @@ const Styles = styled.div`
       }
     }
 
+    tr:hover {
+      background-color: #ddd;
+    }
+    thead > tr:hover {
+      background-color: unset;
+    }
     th,
     td {
       color: black;
@@ -483,12 +489,14 @@ function App() {
           {
             Header: "password",
             accessor: "password",
+            disableFilters: true,
           },
           {
             Header: "Last Name",
             accessor: "lastName",
             // Use our custom `fuzzyText` filter on this column
             filter: "fuzzyText",
+            disableFilters: true,
           },
         ],
       },
@@ -531,7 +539,7 @@ function App() {
     []
   );
 
-  const data = React.useMemo(() => makeData(100000), []);
+  const data = React.useMemo(() => makeData(100), []);
   console.log(makeData);
   return (
     <Styles>

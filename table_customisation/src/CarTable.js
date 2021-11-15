@@ -12,13 +12,7 @@ import {
 import { matchSorter } from "match-sorter";
 import Checkbox from "@mui/material/Checkbox";
 import makeData from "./makeData";
-import {
-  Autocomplete,
-  Pagination,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Container, Paper, TextField } from "@mui/material";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const Styles = styled.div`
@@ -37,7 +31,7 @@ const Styles = styled.div`
     }
 
     tr:hover {
-      background-color: #ddd;
+      background-color: #f9fafb;
     }
     thead > tr:hover {
       background-color: unset;
@@ -47,7 +41,7 @@ const Styles = styled.div`
       color: black;
       margin: 10px;
       padding: 10px;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e5e7eb;
       border-right: 1px solid white;
       height: 40px;
 
@@ -353,116 +347,122 @@ function Table({ columns, data }) {
 
   return (
     <>
-      <table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()} style={{ border: "none" }}>
-                  {column.render("Header")}
-                  {/* Render the columns filter UI */}
-                  <div>{column.canFilter ? column.render("Filter") : null}</div>
-                </th>
+      <Paper elevation={3} style={{ padding: "50px" }}>
+        <Container maxWidth="sm">
+          <div
+            style={{
+              marginBottom: "20px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={state.globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          </div>
+          <table {...getTableProps()}>
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()} style={{ border: "none" }}>
+                      {column.render("Header")}
+                      {/* Render the columns filter UI */}
+                      <div>
+                        {column.canFilter ? column.render("Filter") : null}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-          <tr>
-            <th
-              colSpan={visibleColumns.length}
-              style={{
-                textAlign: "left",
-                border: "none",
-                color: "blue",
-              }}
-            >
-              <GlobalFilter
-                preGlobalFilteredRows={preGlobalFilteredRows}
-                globalFilter={state.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-              />
-            </th>
-          </tr>
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      {/* 
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row, i) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {/* 
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {"<"}
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {">"}
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          Page{" "}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | Go to page:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-            style={{ width: "100px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+          <div className="pagination">
+            <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+              {"<<"}
+            </button>{" "}
+            <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+              {"<"}
+            </button>{" "}
+            <button onClick={() => nextPage()} disabled={!canNextPage}>
+              {">"}
+            </button>{" "}
+            <button
+              onClick={() => gotoPage(pageCount - 1)}
+              disabled={!canNextPage}
+            >
+              {">>"}
+            </button>{" "}
+            <span>
+              Page{" "}
+              <strong>
+                {pageIndex + 1} of {pageOptions.length}
+              </strong>{" "}
+            </span>
+            <span>
+              | Go to page:{" "}
+              <input
+                type="number"
+                defaultValue={pageIndex + 1}
+                onChange={(e) => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                  gotoPage(page);
+                }}
+                style={{ width: "100px" }}
+              />
+            </span>{" "}
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+              }}
+            >
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div>
-        <pre>
-          <code>
-            {JSON.stringify(
-              {
-                selectedRowIds: selectedRowIds,
-                "selectedFlatRows[].original": selectedFlatRows.map(
-                  (d) => d.original
-                ),
-              },
-              null,
-              2
-            )}
-          </code>
-        </pre>
-      </div>
+          <div>
+            <pre>
+              <code>
+                {JSON.stringify(
+                  {
+                    selectedRowIds: selectedRowIds,
+                    "selectedFlatRows[].original": selectedFlatRows.map(
+                      (d) => d.original
+                    ),
+                  },
+                  null,
+                  2
+                )}
+              </code>
+            </pre>
+          </div>
+        </Container>
+      </Paper>
     </>
   );
 }
@@ -539,7 +539,7 @@ function App() {
     []
   );
 
-  const data = React.useMemo(() => makeData(100), []);
+  const data = React.useMemo(() => makeData(1000), []);
   console.log(makeData);
   return (
     <Styles>

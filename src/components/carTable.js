@@ -1,174 +1,21 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
-import styled from 'styled-components';
+import React, { useMemo } from 'react';
+
 import {
   useTable, useFilters, useRowSelect, useGlobalFilter, usePagination,
 } from 'react-table';
 // A great library for fuzzy filtering/sorting items
 import { matchSorter } from 'match-sorter';
-import Checkbox from '@mui/material/Checkbox';
-import makeData from './makeData';
+import GlobalFilter from './GlobalFilter';
+import DefaultColumnFilter from './DefaultColumnFilter';
+import IndeterminateCheckbox from './IndeterminateCheckbox';
 
 // const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-const Styles = styled.div`
-  padding: 1rem;
-
-  table {
-    border-spacing: 0;
-    border: 1px solid rgba(225, 227, 229, 1);
-
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-
-    th,
-    td {
-      color:black;
-      margin: 10px;
-      padding: 10px;
-      border-bottom: 1px solid black;
-      border-right: 1px solid white;
-      height:40px;
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
-`;
-
-// Define a default UI for filtering
-const GlobalFilter = function ({
-  preGlobalFilteredRows,
-  globalFilter,
-  setGlobalFilter,
-}) {
-  const count = preGlobalFilteredRows.length;
-  const [value, setValue] = React.useState(globalFilter);
-  const onChange = () => {
-    setGlobalFilter(value || undefined);
-  };
-
-  // This Make regeneratorruntime is not defined Error
-  // useAsyncDebounce(value => {
-  //   setGlobalFilter(value || undefined)
-  // }, 200)
-
-  return (
-    <span>
-      Search:
-      {' '}
-      <input
-        value={value || ''}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onChange(e.target.value);
-        }}
-        placeholder={`${count} records...`}
-        style={{
-          fontSize: '1.1rem',
-          border: '2px solid black',
-
-        }}
-      />
-    </span>
-  );
-};
-
-// Define a default UI for filtering
-const DefaultColumnFilter = function ({
-  column: { filterValue, preFilteredRows, setFilter },
-}) {
-  const count = preFilteredRows.length;
-
-  return (
-    <input
-      value={filterValue || ''}
-      onChange={(e) => {
-        setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-      }}
-      placeholder={`Search Last Name ${count} records...`}
-    />
-  );
-};
-
-// This is a custom filter UI for selecting
-// a unique option from a list
-const SelectColumnFilter = function ({
-  column: {
-    filterValue, setFilter, preFilteredRows, id,
-  },
-}) {
-  // Calculate the options for filtering
-  // using the preFilteredRows
-  const options = React.useMemo(() => {
-    const optionsSet = new Set();
-    preFilteredRows.forEach((row) => {
-      optionsSet.add(row.values[id]);
-    });
-    return [...optionsSet.values()];
-  }, [id, preFilteredRows]);
-
-  // Render a multi-select box
-  return (
-    <select
-      value={filterValue}
-      onChange={(e) => {
-        setFilter(e.target.value || undefined);
-      }}
-    >
-      <option value="">All</option>
-      {options.map((option, i) => (
-        <option key={i} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  );
-};
 
 // This is a custom filter UI that uses a
 // slider to set the filter value between a column's
 // min and max values
-const SliderColumnFilter = function ({
-  column: {
-    filterValue, setFilter, preFilteredRows, id,
-  },
-}) {
-  // Calculate the min and max
-  // using the preFilteredRows
-
-  const [min, max] = React.useMemo(() => {
-    let minimum = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
-    let maximum = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
-    preFilteredRows.forEach((row) => {
-      minimum = Math.min(row.values[id], min);
-      maximum = Math.max(row.values[id], max);
-    });
-    return [minimum, maximum];
-  }, [id, preFilteredRows]);
-
-  return (
-    <>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        value={filterValue || min}
-        onChange={(e) => {
-          setFilter(parseInt(e.target.value, 10));
-        }}
-      />
-      <button type="button" onClick={() => setFilter(undefined)}>Off</button>
-    </>
-  );
-};
-
 // This is a custom UI for our 'between' or number range
 // filter. It uses two number boxes and filters rows to
 // ones that have values between the two
@@ -231,23 +78,9 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val;
 
-const IndeterminateCheckbox = React.forwardRef(
-  ({ indeterminate, ...rest }, ref) => {
-    const defaultRef = React.useRef();
-    const resolvedRef = ref || defaultRef;
-
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate;
-    }, [resolvedRef, indeterminate]);
-
-    return (
-      <Checkbox ref={resolvedRef} {...rest} />
-    );
-  },
-);
 // Our table component
-const Table = function ({ columns, data }) {
-  const filterTypes = React.useMemo(
+const Table = ({ columns, data }) => {
+  const filterTypes = useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
       fuzzyText: fuzzyTextFilterFn,
@@ -265,7 +98,7 @@ const Table = function ({ columns, data }) {
     [],
   );
 
-  const defaultColumn = React.useMemo(
+  const defaultColumn = useMemo(
     () => ({
       // Let's set up our default Filter UI
       Filter: DefaultColumnFilter,
@@ -462,84 +295,4 @@ const Table = function ({ columns, data }) {
   );
 };
 
-// Define a custom filter filter function!
-function filterGreaterThan(rows, id, filterValue) {
-  return rows.filter((row) => {
-    const rowValue = row.values[id];
-    return rowValue >= filterValue;
-  });
-}
-
-// This is an autoRemove method on the filter function that
-// when given the new filter value and returns true, the filter
-// will be automatically removed. Normally this is just an undefined
-// check, but here, we want to remove the filter if it's not a number
-filterGreaterThan.autoRemove = (val) => typeof val !== 'number';
-
-const App = function () {
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'Name',
-        columns: [
-          {
-            Header: 'password',
-            accessor: 'password',
-          },
-          {
-            Header: 'Last Name',
-            accessor: 'lastName',
-            // Use our custom `fuzzyText` filter on this column
-            filter: 'fuzzyText',
-          },
-        ],
-      },
-      {
-        Header: 'Info',
-        columns: [
-          {
-            Header: 'Age',
-            accessor: 'age',
-            Filter: SliderColumnFilter,
-            filter: 'equals',
-          },
-          // {
-          //   Header: 'Visits',
-          //   accessor: 'visits',
-          //   Filter: NumberRangeColumnFilter,
-          //   filter: 'between',
-          // },
-          {
-            Header: 'Status',
-            accessor: 'visits',
-            Filter: SelectColumnFilter,
-            filter: 'includes',
-          },
-          {
-            Header: 'Vendeur de produit',
-            accessor: 'status',
-            Filter: SelectColumnFilter,
-            filter: 'includes',
-          },
-          {
-            Header: 'Profile Progress',
-            accessor: 'progress',
-            Filter: SliderColumnFilter,
-            filter: filterGreaterThan,
-          },
-        ],
-      },
-    ],
-    [],
-  );
-
-  const data = React.useMemo(() => makeData(100000), []);
-
-  return (
-    <Styles>
-      <Table columns={columns} data={data} />
-    </Styles>
-  );
-};
-
-export default App;
+export default Table;

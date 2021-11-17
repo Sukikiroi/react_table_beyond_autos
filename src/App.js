@@ -5,7 +5,7 @@ import SelectColumnFilter from './components/SelectColumnFilter';
 import SliderColumnFilter from './components/SliderColumnFilter';
 
 import makeData from '../makeData';
-import Styles from './Styles';
+import { Styles } from './Styles';
 
 // Define a custom filter filter function!
 function filterGreaterThan(rows, id, filterValue) {
@@ -25,22 +25,7 @@ const App = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Name',
-        columns: [
-          {
-            Header: 'password',
-            accessor: 'password',
-          },
-          {
-            Header: 'Last Name',
-            accessor: 'lastName',
-            // Use our custom `fuzzyText` filter on this column
-            filter: 'fuzzyText',
-          },
-        ],
-      },
-      {
-        Header: 'Info',
+        Header: 'Our Products',
         columns: [
           {
             Header: 'Age',
@@ -78,7 +63,7 @@ const App = () => {
     [],
   );
 
-  const data = React.useMemo(() => makeData(100000), []);
+  const data = useMemo(() => makeData(100000), []);
 
   return (
     <Styles>

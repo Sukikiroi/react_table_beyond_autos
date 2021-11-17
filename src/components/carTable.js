@@ -7,6 +7,7 @@ import {
 } from 'react-table';
 // A great library for fuzzy filtering/sorting items
 import { matchSorter } from 'match-sorter';
+import { StyledTable } from '../Styles';
 import GlobalFilter from './GlobalFilter';
 import DefaultColumnFilter from './DefaultColumnFilter';
 import IndeterminateCheckbox from './IndeterminateCheckbox';
@@ -123,9 +124,9 @@ const Table = ({ columns, data }) => {
     previousPage,
     setPageSize,
     state,
-    selectedFlatRows,
-    state: { pageIndex, pageSize, selectedRowIds },
-    visibleColumns,
+    // selectedFlatRows,
+    state: { pageIndex, pageSize },
+    // visibleColumns,
     preGlobalFilteredRows,
     setGlobalFilter,
   } = useTable(
@@ -150,6 +151,7 @@ const Table = ({ columns, data }) => {
           Header: ({ getToggleAllRowsSelectedProps }) => (
             <div>
               <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              All
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
@@ -171,12 +173,27 @@ const Table = ({ columns, data }) => {
 
   return (
     <>
-      <table {...getTableProps()}>
+      <div
+        style={{
+          textAlign: 'start',
+          border: 'none',
+          color: 'blue',
+        }}
+      >
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+      </div>
+      <StyledTable
+        {...getTableProps()}
+      >
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()} style={{ border: 'none' }}>
+                <th {...column.getHeaderProps()}>
                   {column.render('Header')}
                   {/* Render the columns filter UI */}
                   <div>{column.canFilter ? column.render('Filter') : null}</div>
@@ -184,34 +201,18 @@ const Table = ({ columns, data }) => {
               ))}
             </tr>
           ))}
-          <tr>
-            <th
-              colSpan={visibleColumns.length}
-              style={{
-                textAlign: 'left', border: 'none', color: 'blue',
-              }}
-            >
-              <GlobalFilter
-                preGlobalFilteredRows={preGlobalFilteredRows}
-                globalFilter={state.globalFilter}
-                setGlobalFilter={setGlobalFilter}
-              />
-            </th>
-          </tr>
         </thead>
         <tbody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()}>
-
                 {row.cells.map((cell) => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
-
               </tr>
             );
           })}
         </tbody>
-      </table>
+      </StyledTable>
       {/*
         Pagination can be built however you'd like.
         This is just a very basic UI implementation:
@@ -275,7 +276,7 @@ const Table = ({ columns, data }) => {
 
       </div>
 
-      <div>
+      {/* <div>
         <pre>
           <code>
             {JSON.stringify(
@@ -290,7 +291,7 @@ const Table = ({ columns, data }) => {
             )}
           </code>
         </pre>
-      </div>
+      </div> */}
     </>
   );
 };

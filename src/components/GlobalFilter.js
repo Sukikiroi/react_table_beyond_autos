@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Input } from '../Styles';
 
 const GlobalFilter = ({
   preGlobalFilteredRows,
@@ -20,18 +21,13 @@ const GlobalFilter = ({
     <span>
       Search:
       {' '}
-      <input
+      <Input
         value={value || ''}
         onChange={(e) => {
           setValue(e.target.value);
           onChange(e.target.value);
         }}
         placeholder={`${count} records...`}
-        style={{
-          fontSize: '1.1rem',
-          border: '2px solid black',
-
-        }}
       />
     </span>
   );

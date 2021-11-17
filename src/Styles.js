@@ -2,21 +2,49 @@ import styled from 'styled-components';
 
 const Styles = styled.div`
   padding: 1rem;
+  text-align: center;
+  
+  .pagination {
+    padding: 0.5rem;
+    font-size: 1.3rem;
+  }
+  .pagination button, input, select{
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    background: #E9EFF6;
+    font-size: 1.3rem;
+  }
+  .pagination select{
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    background: #E9EFF6;
+  }
+`;
 
-  table {
-    border-spacing: 0;
-    border: 1px solid rgba(225, 227, 229, 1);
+const Input = styled.input`
+  font-size: 1.1rem;
+  width: 45%;
+  padding: 10px;
+  margin: 10px;
+  background: #E9EFF6;
+  border: none;
+  border-radius: 3px;
+`;
 
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
+const StyledTable = styled.table`
+  border-spacing: 0;
+  width: 100%;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  border: none;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 25px;
+  fontSize: 1.5rem;
 
-    th,
-    td {
+  th,td {
       color:black;
       margin: 10px;
       padding: 10px;
@@ -28,7 +56,34 @@ const Styles = styled.div`
         border-right: 0;
       }
     }
+
+  tr {
+    :last-child {
+      td {
+        border-bottom: 0;
+      }
+    }
   }
+
+  thead > tr > th {
+    border: none;
+    text-align: start;
+  };
+
+  tbody > tr {
+    :hover {
+      background-color: #E9EFF6;
+    }
+  };
+
+  tbody > tr > td {
+    text-align: start;
+    border-bottom: 3px solid #E9EFF6
+  };
 `;
 
-export default Styles;
+export {
+  Styles,
+  Input,
+  StyledTable,
+};

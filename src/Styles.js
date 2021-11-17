@@ -2,6 +2,8 @@ import styled from 'styled-components';
 
 const Styles = styled.div`
   padding: 1rem;
+  font-size: 1.3rem;
+
   text-align: center;
   
   .pagination {
@@ -43,6 +45,7 @@ const StyledTable = styled.table`
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   border-radius: 25px;
   fontSize: 1.5rem;
+  
 
   th,td {
       color:black;

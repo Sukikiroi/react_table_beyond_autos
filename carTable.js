@@ -10,6 +10,8 @@ import {
   Typography,
   Select,
   MenuItem,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import {makeStyles} from '@mui/styles'
 import makeData from './makeData'
@@ -45,6 +47,27 @@ const Styles = styled.div`
   }
 `
 const useStyles = makeStyles((theme) => ({
+  selectLastName:{ 
+    "&:hover .MuiOutlinedInput-input ": {
+      backgroundColor: 'rgb(241,242,243)',
+    },  
+    "& p":{
+        height: '40px',
+        width: '130px',
+        backgroundColor: 'rgb(174,233,209)',
+        margin: '5px',
+        borderRadius: '20px',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        display: 'table-cell',
+    },                          
+    '& fieldset.MuiOutlinedInput-notchedOutline': {
+      borderColor: 'transparent',
+    },
+    '&:hover fieldset.MuiOutlinedInput-notchedOutline': {
+      borderColor: 'transparent',
+    },
+  },
   pagination:{
     marginTop: '10px',
     display: 'flex',
@@ -420,9 +443,31 @@ function Table({ columns, data }) {
               <tr {...row.getRowProps()}  >
  
  {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return cell.column.Header === 'Last Name' ?  
+                      <td {...cell.getCellProps()}>
+                        <FormControl sx={{ m: 1, minWidth: 170 }}>
+                          <Select
+                            labelId="id-select-last-name-label"
+                            id="id-select-last-name"
+                            value=""
+                            renderValue={() =>{ 
+                              return <p>Last Name</p>}
+                            }
+                            displayEmpty
+                            fullWidth
+                            className={classes.selectLastName}
+                            variant='outlined'
+                          >
+                            <MenuItem disabled  value="">
+                              <b>This is the Last Name</b>
+                            </MenuItem>
+                            <MenuItem value="1">{cell.render('Cell')}</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </td>
+                    :  
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 })}
-
               </tr>
             )
           })}

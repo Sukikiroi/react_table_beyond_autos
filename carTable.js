@@ -48,6 +48,21 @@ const Styles = styled.div`
   }
 `
 const useStyles = makeStyles((theme) => ({
+  carContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'left',
+  },
+  carImg: {
+    height: '38px',
+    width: '38px',
+  },
+  carName: {
+    display: 'inline-block',
+    alignSelf: 'center',
+    textTransform: 'uppercase',
+    fontSize: 'bold',
+  },
   selectLastName:{ 
     "&:hover .MuiOutlinedInput-input ": {
       backgroundColor: 'rgb(241,242,243)',
@@ -482,8 +497,26 @@ function Table({ columns, data }) {
                           </Select>
                         </FormControl>
                       </td>
-                    :  
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    :  cell.column.Header === 'Car' ?  
+                        <td {...cell.getCellProps()}>
+                          <div
+                            className={classes.carContainer}
+                          >
+                            <img 
+                              className={classes.carImg}
+                              src="https://cdn.shopify.com/s/files/1/0609/8885/0432/products/beyondautosjeepwrwngler01_350x350.png?v=1636306078"
+                              alt="car"
+                            />
+                            <Typography
+                              className={classes.carName}
+                              ml={1}
+                            >
+                              {cell.render('Cell')}
+                            </Typography>
+                          </div>
+                        </td>
+                      :
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 })}
               </tr>
             )
@@ -621,7 +654,7 @@ function App() {
         Header: 'Name',
         columns: [
            {
-             Header: 'password',
+             Header: 'Car',
              accessor: 'password',
            },
           {

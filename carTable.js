@@ -10,7 +10,10 @@ import {
   Typography,
   Select,
   MenuItem,
+  FormControl,
+  InputAdornment,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import {makeStyles} from '@mui/styles'
 import makeData from './makeData'
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -34,7 +37,7 @@ const Styles = styled.div`
       color:black;
       margin: 10px;
       padding: 10px;
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid rgb(225,227,229);
       border-right: 1px solid white;
       height:40px;
 
@@ -45,6 +48,27 @@ const Styles = styled.div`
   }
 `
 const useStyles = makeStyles((theme) => ({
+  selectLastName:{ 
+    "&:hover .MuiOutlinedInput-input ": {
+      backgroundColor: 'rgb(241,242,243)',
+    },  
+    "& p":{
+        height: '40px',
+        width: '130px',
+        backgroundColor: 'rgb(174,233,209)',
+        margin: '5px',
+        borderRadius: '20px',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+        display: 'table-cell',
+    },                          
+    '& fieldset.MuiOutlinedInput-notchedOutline': {
+      borderColor: 'transparent',
+    },
+    '&:hover fieldset.MuiOutlinedInput-notchedOutline': {
+      borderColor: 'transparent',
+    },
+  },
   pagination:{
     marginTop: '10px',
     display: 'flex',
@@ -96,9 +120,8 @@ function GlobalFilter({
   // }, 200)
 
   return (
-    <span>
-      Search:{' '}
-      <input
+
+      <TextField
         value={value || ""}
         onChange={e => {
           setValue(e.target.value);
@@ -107,11 +130,18 @@ function GlobalFilter({
         placeholder={`${count} records...`}
         style={{
           fontSize: '1.1rem',
-          border: '2px solid black',
+          // border: '2px solid black',
 
         }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position='start'>
+                <SearchIcon />
+            </InputAdornment>
+          )
+        }}
+        size="small"
       />
-    </span>
   )
 }
 
@@ -149,19 +179,29 @@ function SelectColumnFilter({
 
   // Render a multi-select box
   return (
-    <select
-      value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined)
-      }}
-    >
-      <option value="">All</option>
-      {options.map((option, i) => (
-        <option key={i} value={option}>
+    <Select
+        labelId="id-select-filter-label"
+        id="id-select-filter"
+        value={filterValue}
+        onChange={e => {
+          setFilter(e.target.value || undefined)
+        }}
+        // renderValue={() =>{ 
+        //   return <b>{id}</b>}
+        // }
+        displayEmpty
+        fullWidth
+        sx={{ mt: 1,}}
+        size="small" 
+        variant='outlined'
+      >
+        <MenuItem>All</MenuItem>
+        {options.map((option, i) => (
+        <MenuItem key={i} value={option}>
           {option}
-        </option>
+        </MenuItem>
       ))}
-    </select>
+      </Select>
   )
 }
 
@@ -420,9 +460,31 @@ function Table({ columns, data }) {
               <tr {...row.getRowProps()}  >
  
  {row.cells.map(cell => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  return cell.column.Header === 'Last Name' ?  
+                      <td {...cell.getCellProps()}>
+                        <FormControl sx={{ m: 1, minWidth: 170 }}>
+                          <Select
+                            labelId="id-select-last-name-label"
+                            id="id-select-last-name"
+                            value={cell.render('Cell')}
+                            renderValue={() =>{ 
+                              return <p>Last Name</p>}
+                            }
+                            displayEmpty
+                            fullWidth
+                            className={classes.selectLastName}
+                            variant='outlined'
+                          >
+                            <MenuItem disabled  value="">
+                              <b>This is the Last Name</b>
+                            </MenuItem>
+                            <MenuItem value="1">{cell.render('Cell')}</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </td>
+                    :  
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 })}
-
               </tr>
             )
           })}

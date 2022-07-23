@@ -4,6 +4,14 @@ import { useTable, useFilters,useRowSelect, useGlobalFilter, useAsyncDebounce,us
 // A great library for fuzzy filtering/sorting items
 import {matchSorter} from 'match-sorter'
 import Checkbox from '@mui/material/Checkbox';
+import {
+  Pagination,
+  TextField,
+  Typography,
+  Select,
+  MenuItem,
+} from '@mui/material';
+import {makeStyles} from '@mui/styles'
 import makeData from './makeData'
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const Styles = styled.div`
@@ -36,7 +44,39 @@ const Styles = styled.div`
     }
   }
 `
-
+const useStyles = makeStyles((theme) => ({
+  pagination:{
+    marginTop: '10px',
+    display: 'flex',
+    flexDirection: 'row',
+    height: '32px',
+  },
+  goToPageContainer:{
+    display: 'flex',
+    height: '32px',
+    margin: '0px 3px 0px 15px',
+  },
+  goToPageTypography: {
+    display: 'inline-block',
+    alignSelf: 'center',
+  },
+  goToPageField:{
+    margin: '0px 15px 0px 3px',
+    width: '95px',
+    '& input': {
+      height: '32px',
+      padding: '0px 2px 0px 5px',
+    },
+    '& label': {
+      height: '32px',
+      top: '-6px',
+    },
+    '& fieldset': {
+      padding: '0px',
+    },
+    height: '32px',
+  }
+}))
 // Define a default UI for filtering
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -240,6 +280,7 @@ const IndeterminateCheckbox = React.forwardRef(
 )
 // Our table component
 function Table({ columns, data }) {
+  const classes = useStyles()
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -331,7 +372,17 @@ function Table({ columns, data }) {
   // We don't want to render all of the rows for this example, so cap
   // it for this use case
   const firstPageRows = rows.slice(0, 20)
-
+  const handleChangePage = (_, value) =>{
+    if(value === 1){
+      gotoPage(0)
+    }else if(value === pageCount){
+      gotoPage(pageCount - 1)
+    }else if(value < pageIndex + 1){
+      previousPage()
+    }else{
+      nextPage()
+    }
+  }
   return (
     <>
       <table {...getTableProps()}>
@@ -381,7 +432,7 @@ function Table({ columns, data }) {
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-       <div className="pagination">
+       {/* <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
         </button>{' '}
@@ -425,9 +476,48 @@ function Table({ columns, data }) {
           ))}
         </select>
      
-      </div>
-
-      
+      </div> */}
+      <div className={classes.pagination}>
+        <Pagination 
+          count={pageOptions.length} 
+          page={pageIndex + 1}
+          onChange={handleChangePage}
+          showFirstButton
+          showLastButton
+          variant="outlined" 
+          shape="rounded" 
+        />
+        <div className={classes.goToPageContainer}>
+          <Typography className={classes.goToPageTypography}>
+            Go to page:
+          </Typography>
+        </div>
+        <div className={classes.goToPageField}>
+          <TextField 
+            id="go-to-page" 
+            variant="outlined" 
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={e => {
+              console.log(e.target.value)
+              const page = e.target.value ? Number(e.target.value) - 1 : 0
+              gotoPage(page)
+            }}
+          />
+        </div>
+        <Select
+          value={pageSize}
+          onChange={e => {
+            setPageSize(Number(e.target.value))
+          }}
+        >
+          {[10, 20, 30, 40, 50].map(pageSize => (
+            <MenuItem  key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </MenuItem >
+          ))}
+        </Select>
+        </div>
       <div>
         <pre>
         <code>
